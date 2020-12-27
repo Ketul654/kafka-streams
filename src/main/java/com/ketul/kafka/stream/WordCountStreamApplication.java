@@ -37,7 +37,7 @@ public class WordCountStreamApplication {
         Get a Stream from kafka topic
          */
         StreamsBuilder builder = new StreamsBuilder();
-        KStream<String, String> wordCountInput = builder.stream(StreamConstants.INPUT_TOPIC);
+        KStream<String, String> wordCountInput = builder.stream(StreamConstants.WORD_INPUT_TOPIC);
 
         KTable<String, Long> wordCounts = wordCountInput
                 .mapValues(sentence -> {
@@ -86,7 +86,7 @@ public class WordCountStreamApplication {
         /*
         Setting output topic to write output to
          */
-        wordCounts.toStream().to(StreamConstants.OUTPUT_TOPIC);
+        wordCounts.toStream().to(StreamConstants.WORD_OUTPUT_TOPIC);
 
         Topology topology = builder.build();
         KafkaStreams streams = new KafkaStreams(topology, properties);
