@@ -16,6 +16,42 @@ import java.util.Set;
  * Take a comma delimited topic of userid,colour
  * Filter out bad data i.e. keep only colour of green,red and blue
  * Get the running count of the favourite colour overall and output this to a topic
+ *
+ * 1. Create input and output compacted topics
+ *
+ * bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic favourite-colour-input --config cleanup.policy=compact
+ * bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic favourite-colour-output --config cleanup.policy=compact
+ *
+ * 2. Start this application
+ *
+ * 3. Produce message with key as userid and value as colour from kafka console producer
+ *
+ * bin/kafka-console-producer.sh --broker-list localhost:9092 --topic favourite-colour-input --property parse.key=true --property key.separator=,
+ *
+ * i.e.
+ * bin/kafka-console-producer.sh --broker-list localhost:9092 --topic favourite-colour-input --property parse.key=true --property key.separator=,
+ * >stephane,blue
+ * >john,green
+ * >stephane,red
+ * >alice,red
+ *
+ * 4. Consume messages from output topic
+ *
+ * bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 \
+ *     --topic favourite-colour-output \
+ *     --from-beginning \
+ *     --formatter kafka.tools.DefaultMessageFormatter \
+ *     --property print.key=true \
+ *     --property print.value=true \
+ *     --property key.deserializer=org.apache.kafka.common.serialization.StringDeserializer \
+ *     --property value.deserializer=org.apache.kafka.common.serialization.LongDeserializer
+ * red	5
+ * red	5
+ * green	3
+ * red	4
+ * blue	2
+ * blue	3
+ * blue	2
  */
 public class FavouriteColourStreamApplication {
 
