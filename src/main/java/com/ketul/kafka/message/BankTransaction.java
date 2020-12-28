@@ -1,4 +1,4 @@
-package com.ketul.kafka.data;
+package com.ketul.kafka.message;
 
 import java.time.Instant;
 

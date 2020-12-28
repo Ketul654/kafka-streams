@@ -1,6 +1,6 @@
 package com.ketul.kafka.producer;
 
-import com.ketul.kafka.data.BankTransaction;
+import com.ketul.kafka.message.BankTransaction;
 import com.ketul.kafka.serde.BankTransactionSerializer;
 import com.ketul.kafka.utils.StreamConstants;
 import org.apache.kafka.clients.producer.KafkaProducer;

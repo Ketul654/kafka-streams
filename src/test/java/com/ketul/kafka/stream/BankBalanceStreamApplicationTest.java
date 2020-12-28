@@ -1,7 +1,7 @@
 package com.ketul.kafka.stream;
 
-import com.ketul.kafka.data.BankBalance;
-import com.ketul.kafka.data.BankTransaction;
+import com.ketul.kafka.message.BankBalance;
+import com.ketul.kafka.message.BankTransaction;
 import com.ketul.kafka.serde.BankBalanceDeserializer;
 import com.ketul.kafka.serde.BankBalanceSerializer;
 import com.ketul.kafka.serde.BankTransactionDeserializer;
