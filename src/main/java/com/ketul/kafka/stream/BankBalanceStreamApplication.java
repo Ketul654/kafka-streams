@@ -49,9 +49,9 @@ public class BankBalanceStreamApplication {
                 () -> new BankBalance(0, Instant.ofEpochMilli(0L), 0),
                 (name, bankTransaction, bankBalance) -> {
                     return new BankBalance(
-                        bankTransaction.getAmount() + bankBalance.getBalance(),
-                        bankTransaction.getTime().compareTo(bankBalance.getTime()) >= 0 ? bankTransaction.getTime() : bankBalance.getTime(),
-                            bankBalance.getNoOfTransaction() + 1
+                        bankTransaction.getAmount() + bankBalance.getCurrentBalance(),
+                        bankTransaction.getTime().compareTo(bankBalance.getLastTransactionTime()) >= 0 ? bankTransaction.getTime() : bankBalance.getLastTransactionTime(),
+                            bankBalance.getTotalTransactions() + 1
                     );
                 },
                 Materialized.as("bank-balance").withValueSerde(bankBalanceSerdes).withKeySerde(Serdes.String())

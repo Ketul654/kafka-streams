@@ -3,36 +3,36 @@ package com.ketul.kafka.data;
 import java.time.Instant;
 
 public class BankBalance {
-    private float balance;
-    private Instant time;
-    private int noOfTransaction;
+    private float currentBalance;
+    private Instant lastTransactionTime;
+    private int totalTransactions;
 
     public BankBalance(){}
 
-    public BankBalance(float balance, Instant time, int noOfTransaction){
-        this.balance = balance;
-        this.time = time;
-        this.noOfTransaction = noOfTransaction;
+    public BankBalance(float currentBalance, Instant lastTransactionTime, int totalTransactions){
+        this.currentBalance = currentBalance;
+        this.lastTransactionTime = lastTransactionTime;
+        this.totalTransactions = totalTransactions;
     }
 
-    public float getBalance() {
-        return balance;
+    public float getCurrentBalance() {
+        return currentBalance;
     }
 
-    public Instant getTime() {
-        return time;
+    public Instant getLastTransactionTime() {
+        return lastTransactionTime;
     }
 
-    public int getNoOfTransaction() {
-        return noOfTransaction;
+    public int getTotalTransactions() {
+        return totalTransactions;
     }
 
     @Override
     public String toString() {
         return "BankBalance{" +
-                "balance=" + balance +
-                ", time=" + time +
-                ", noOfTransaction=" + noOfTransaction +
+                "balance=" + currentBalance +
+                ", time=" + lastTransactionTime +
+                ", noOfTransaction=" + totalTransactions +
                 '}';
     }
 }
