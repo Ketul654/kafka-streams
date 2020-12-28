@@ -28,7 +28,7 @@ public class BankBalanceStreamApplication {
         properties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, StreamConstants.BOOTSTRAP_SERVERS);
         properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, StreamConstants.AUTO_OFFSET_RESET_EARLIEST);
 
-        properties.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 1000);
+        properties.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 10);
 
         // This simple one line configuration provides exactly once semantics. Magic!!
         properties.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE);
