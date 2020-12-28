@@ -1,5 +1,13 @@
 # Kafka Streams
 
+## About
+
+This has a few stream applications for different purposes i.e to calculate occurrence of same words from a stream of sentences, what colour is favourite for how many users from a stream of userid and colour, total remaining balance for different users from a stream of transactions etc. More details on how to run these streams are provided in java docs of those streams.
+
+This is developed in Java 8 and Kafka Stream 2.7.0 
+
+Kafka cluster is prerequisite to run these applications. Follow ```Kafka Cluster Setup``` section to set it up.
+
 ## Kafka Cluster Setup
 
 #### Follow below steps to set up 3 node cluster on single Mac machine

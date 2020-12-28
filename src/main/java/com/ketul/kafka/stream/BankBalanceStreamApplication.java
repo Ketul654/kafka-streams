@@ -19,16 +19,21 @@ import java.time.Instant;
 import java.util.Properties;
 
 /**
+ *
  * 1. Create input and output topics
  *    bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic bank-transactions
  *    bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic bank-balances --config cleanup.policy=compact
  *
- * 2. Start BankTransactionProducer to produce random bank transactions for 6 users to bank-transactions topic
+ * 2. Star console consumer on input and output topics
  *
- * 3. Start BankBalanceStreamApplication to calculate total balance, total number of transactions and latest transaction time and publish it to output topic bank-balances
- *
- * 4. Make sure you configure producer and consumer to achieve exactly once semantics otherwise it will end up calculating wrong bank balance due to duplication.
+ * 3. Make sure you configure producer and consumer to achieve exactly once semantics otherwise it will end up calculating wrong bank balance due to duplication.
  *    i.e. Make producer idempotent and configure processing.guarantee to exactly_once for stream application
+ *
+ * 4. Start BankTransactionProducer to produce random bank transactions for 6 users to bank-transactions topic
+ *
+ * 5. Start BankBalanceStreamApplication to calculate total balance, total number of transactions and latest transaction time and publish it to output topic bank-balances
+ *
+ *
  */
 public class BankBalanceStreamApplication {
 
