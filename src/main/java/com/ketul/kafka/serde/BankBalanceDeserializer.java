@@ -3,7 +3,6 @@ package com.ketul.kafka.serde;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ketul.kafka.data.BankBalance;
-import com.ketul.kafka.data.BankTransaction;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,9 +22,9 @@ public class BankBalanceDeserializer implements Deserializer<BankBalance> {
     @Override
     public BankBalance deserialize(String s, byte[] bytes) {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
         BankBalance bankBalance = null;
         try {
-            mapper.registerModule(new JavaTimeModule());
             bankBalance = mapper.readValue(bytes, BankBalance.class);
         } catch (IOException e) {
             LOGGER.error("Exception occurred while deserializing bank balance : ", e);

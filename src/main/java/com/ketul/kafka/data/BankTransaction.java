@@ -5,7 +5,6 @@ import java.time.Instant;
 public class BankTransaction {
     private String name;
     private float amount;
-
     private Instant time;
 
     public BankTransaction(){}

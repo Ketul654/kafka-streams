@@ -18,6 +18,18 @@ import org.slf4j.LoggerFactory;
 import java.time.Instant;
 import java.util.Properties;
 
+/**
+ * 1. Create input and output topics
+ *    bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic bank-transactions
+ *    bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic bank-balances --config cleanup.policy=compact
+ *
+ * 2. Start BankTransactionProducer to produce random bank transactions for 6 users to bank-transactions topic
+ *
+ * 3. Start BankBalanceStreamApplication to calculate total balance, total number of transactions and latest transaction time and publish it to output topic bank-balances
+ *
+ * 4. Make sure you configure producer and consumer to achieve exactly once semantics otherwise it will end up calculating wrong bank balance due to duplication.
+ *    i.e. Make producer idempotent and configure processing.guarantee to exactly_once for stream application
+ */
 public class BankBalanceStreamApplication {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BankBalanceStreamApplication.class);
@@ -28,7 +40,7 @@ public class BankBalanceStreamApplication {
         properties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, StreamConstants.BOOTSTRAP_SERVERS);
         properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, StreamConstants.AUTO_OFFSET_RESET_EARLIEST);
 
-        properties.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 10);
+        properties.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 5);
 
         // This simple one line configuration provides exactly once semantics. Magic!!
         properties.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE);
@@ -41,11 +53,9 @@ public class BankBalanceStreamApplication {
                         bankTransactionSerdes
                 ));
 
-        KGroupedStream<String, BankTransaction> bankBalanceKStream = bankTransactionKStream.groupByKey();
-
         Serde bankBalanceSerdes = Serdes.serdeFrom(new BankBalanceSerializer(), new BankBalanceDeserializer());
 
-        KTable<String, BankBalance> bankBalanceKTable =  bankBalanceKStream.aggregate(
+        KTable<String, BankBalance> bankBalanceKTable =  bankTransactionKStream.groupByKey().aggregate(
                 () -> new BankBalance(0, Instant.ofEpochMilli(0L), 0),
                 (name, bankTransaction, bankBalance) -> {
                     return new BankBalance(
