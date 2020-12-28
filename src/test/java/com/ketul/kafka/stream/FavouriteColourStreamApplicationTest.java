@@ -33,7 +33,7 @@ public class FavouriteColourStreamApplicationTest {
         Topology topology = (Topology) method.invoke(application, null);
         method.setAccessible(false);
 
-        method = FavouriteColourStreamApplication.class.getDeclaredMethod("getProducerProperties");
+        method = FavouriteColourStreamApplication.class.getDeclaredMethod("getStreamProperties");
         method.setAccessible(true);
         Properties properties = (Properties) method.invoke(application, null);
         method.setAccessible(false);

@@ -26,7 +26,7 @@ public class WordCountStreamApplication {
 
     public static void main(String[] args) {
 
-        Properties properties = getProducerProperties();
+        Properties properties = getStreamProperties();
 
         Topology topology = createTopology();
 
@@ -104,7 +104,7 @@ public class WordCountStreamApplication {
         return builder.build();
     }
 
-    private static Properties getProducerProperties() {
+    private static Properties getStreamProperties() {
         Properties properties = new Properties();
         properties.put(StreamsConfig.APPLICATION_ID_CONFIG, StreamConstants.WORD_COUNT_APPLICATION_ID);
         properties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, StreamConstants.BOOTSTRAP_SERVERS);

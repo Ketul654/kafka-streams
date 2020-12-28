@@ -36,7 +36,7 @@ public class WordCountStreamApplicationTest {
         Topology topology = (Topology) method.invoke(application, null);
         method.setAccessible(false);
 
-        method = WordCountStreamApplication.class.getDeclaredMethod("getProducerProperties");
+        method = WordCountStreamApplication.class.getDeclaredMethod("getStreamProperties");
         method.setAccessible(true);
         Properties properties = (Properties) method.invoke(application, null);
         method.setAccessible(false);

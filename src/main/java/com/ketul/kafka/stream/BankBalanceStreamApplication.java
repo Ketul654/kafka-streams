@@ -40,16 +40,19 @@ public class BankBalanceStreamApplication {
     private static final Logger LOGGER = LoggerFactory.getLogger(BankBalanceStreamApplication.class);
 
     public static void main(String[] args) {
-        Properties properties = new Properties();
-        properties.put(StreamsConfig.APPLICATION_ID_CONFIG, StreamConstants.FAVOURITE_COLOUR_APPLICATION_ID);
-        properties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, StreamConstants.BOOTSTRAP_SERVERS);
-        properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, StreamConstants.AUTO_OFFSET_RESET_EARLIEST);
 
-        properties.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 5);
+        Properties properties = getStreamProperties();
+        Topology topology = createTopology();
+        KafkaStreams streams = new KafkaStreams(topology, properties);
+        streams.cleanUp();
+        streams.start();
 
-        // This simple one line configuration provides exactly once semantics. Magic!!
-        properties.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE);
+        LOGGER.info(topology.describe().toString());
 
+        Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
+    }
+
+    private static Topology createTopology() {
         Serde<BankTransaction> bankTransactionSerdes = Serdes.serdeFrom(new BankTransactionSerializer(), new BankTransactionDeserializer());
         StreamsBuilder builder = new StreamsBuilder();
         KStream<String, BankTransaction> bankTransactionKStream = builder.stream(StreamConstants.BANK_TRANSACTIONS_TOPIC,
@@ -64,8 +67,8 @@ public class BankBalanceStreamApplication {
                 () -> new BankBalance(0, Instant.ofEpochMilli(0L), 0),
                 (name, bankTransaction, bankBalance) -> {
                     return new BankBalance(
-                        bankTransaction.getAmount() + bankBalance.getCurrentBalance(),
-                        bankTransaction.getTime().compareTo(bankBalance.getLastTransactionTime()) >= 0 ? bankTransaction.getTime() : bankBalance.getLastTransactionTime(),
+                            bankTransaction.getAmount() + bankBalance.getCurrentBalance(),
+                            bankTransaction.getTime().compareTo(bankBalance.getLastTransactionTime()) >= 0 ? bankTransaction.getTime() : bankBalance.getLastTransactionTime(),
                             bankBalance.getTotalTransactions() + 1
                     );
                 },
@@ -74,13 +77,20 @@ public class BankBalanceStreamApplication {
 
         bankBalanceKTable.toStream().to(StreamConstants.BANK_BALANCES_TOPIC);
 
-        Topology topology = builder.build();
-        KafkaStreams streams = new KafkaStreams(topology, properties);
-        streams.cleanUp();
-        streams.start();
+        return builder.build();
+    }
 
-        LOGGER.info(topology.describe().toString());
+    private static Properties getStreamProperties() {
+        Properties properties = new Properties();
+        properties.put(StreamsConfig.APPLICATION_ID_CONFIG, StreamConstants.FAVOURITE_COLOUR_APPLICATION_ID);
+        properties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, StreamConstants.BOOTSTRAP_SERVERS);
+        properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, StreamConstants.AUTO_OFFSET_RESET_EARLIEST);
 
-        Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
+        properties.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 5);
+
+        // This simple one line configuration provides exactly once semantics. Magic!!
+        properties.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE);
+
+        return properties;
     }
 }

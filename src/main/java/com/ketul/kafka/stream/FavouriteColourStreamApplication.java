@@ -58,7 +58,7 @@ public class FavouriteColourStreamApplication {
     private static final Logger LOGGER = LoggerFactory.getLogger(FavouriteColourStreamApplication.class);
 
     public static void main(String[] args) {
-        Properties properties = getProducerProperties();
+        Properties properties = getStreamProperties();
         Topology topology = createTopology();
         KafkaStreams streams = new KafkaStreams(topology, properties);
         streams.start();
@@ -84,7 +84,7 @@ public class FavouriteColourStreamApplication {
         return builder.build();
     }
 
-    private static Properties getProducerProperties() {
+    private static Properties getStreamProperties() {
         Properties properties = new Properties();
         properties.put(StreamsConfig.APPLICATION_ID_CONFIG, StreamConstants.FAVOURITE_COLOUR_APPLICATION_ID);
         properties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, StreamConstants.BOOTSTRAP_SERVERS);
