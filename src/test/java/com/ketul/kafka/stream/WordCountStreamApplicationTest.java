@@ -42,12 +42,14 @@ public class WordCountStreamApplicationTest {
         method.setAccessible(false);
 
         topologyTestDriver = new TopologyTestDriver(topology, properties);
+
+        inputTopic = topologyTestDriver.createInputTopic(StreamConstants.WORD_INPUT_TOPIC, stringSerde.serializer(), stringSerde.serializer());
+        outputTopic = topologyTestDriver.createOutputTopic(StreamConstants.WORD_OUTPUT_TOPIC, stringSerde.deserializer(), longSerde.deserializer());
     }
 
     @Test
     public void testWordCount(){
-        inputTopic = topologyTestDriver.createInputTopic(StreamConstants.WORD_INPUT_TOPIC, stringSerde.serializer(), stringSerde.serializer());
-        outputTopic = topologyTestDriver.createOutputTopic(StreamConstants.WORD_OUTPUT_TOPIC, stringSerde.deserializer(), longSerde.deserializer());
+
         inputTopic.pipeInput("kafka stream application");
         inputTopic.pipeInput("Kafka Connect Application");
         inputTopic.pipeInput("KAFKA STREAM APPLICATION");

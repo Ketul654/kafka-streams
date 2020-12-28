@@ -58,15 +58,16 @@ public class FavouriteColourStreamApplication {
     private static final Logger LOGGER = LoggerFactory.getLogger(FavouriteColourStreamApplication.class);
 
     public static void main(String[] args) {
-        Properties properties = new Properties();
-        properties.put(StreamsConfig.APPLICATION_ID_CONFIG, StreamConstants.FAVOURITE_COLOUR_APPLICATION_ID);
-        properties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, StreamConstants.BOOTSTRAP_SERVERS);
-        properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, StreamConstants.AUTO_OFFSET_RESET_EARLIEST);
-        properties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
-        properties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
+        Properties properties = getProducerProperties();
+        Topology topology = createTopology();
+        KafkaStreams streams = new KafkaStreams(topology, properties);
+        streams.start();
+        LOGGER.info(topology.describe().toString());
 
-        properties.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 1000);
+        Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
+    }
 
+    private static Topology createTopology() {
         Set<String> validColours = new HashSet<>();
         validColours.add("red");
         validColours.add("green");
@@ -80,13 +81,17 @@ public class FavouriteColourStreamApplication {
 
         colourCountTable.toStream().to(StreamConstants.FAVOURITE_COLOUR_OUTPUT_TOPIC);
 
-        Topology topology = builder.build();
-        KafkaStreams streams = new KafkaStreams(topology, properties);
-        streams.start();
+        return builder.build();
+    }
 
-        LOGGER.info(topology.describe().toString());
-
-        Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
-
+    private static Properties getProducerProperties() {
+        Properties properties = new Properties();
+        properties.put(StreamsConfig.APPLICATION_ID_CONFIG, StreamConstants.FAVOURITE_COLOUR_APPLICATION_ID);
+        properties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, StreamConstants.BOOTSTRAP_SERVERS);
+        properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, StreamConstants.AUTO_OFFSET_RESET_EARLIEST);
+        properties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
+        properties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
+        properties.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 1000);
+        return properties;
     }
 }
