@@ -57,8 +57,8 @@ public class BankBalanceStreamApplication {
                     public BankBalance apply(String name, BankTransaction bankTransaction, BankBalance bankBalance) {
                         float balance = bankTransaction.getAmount() + bankBalance.getBalance();
                         int noOfTransactions = bankBalance.getNoOfTransaction() + 1;
-                        Instant time = bankTransaction.getTime();
-                        return new BankBalance(balance, time, noOfTransactions);
+                        Instant latestInstant = bankTransaction.getTime().compareTo(bankBalance.getTime()) >=0 ? bankTransaction.getTime() : bankBalance.getTime();
+                        return new BankBalance(balance, latestInstant, noOfTransactions);
                     }
                 },
                 Materialized.as("bank-balance").withValueSerde(bankBalanceSerdes).withKeySerde(Serdes.String())

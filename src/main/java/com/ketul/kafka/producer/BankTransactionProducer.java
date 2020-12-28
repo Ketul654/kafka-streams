@@ -38,7 +38,7 @@ public class BankTransactionProducer {
 
         try {
             while (true) {
-                for (int i = 0; i < 100; i++) {
+                for (int i = 0; i < 10000; i++) {
                     String customer = customers[random.nextInt(customers.length)];
                     float amount = new Random().nextFloat() * (999 - 1) + 1;
                     BankTransaction bankTransaction = new BankTransaction(customer, amount, Instant.now());
