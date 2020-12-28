@@ -10,6 +10,12 @@ public class StreamConstants {
     public static final String FAVOURITE_COLOUR_INPUT_TOPIC = "favourite-colour-input";
     public static final String FAVOURITE_COLOUR_OUTPUT_TOPIC = "favourite-colour-output";
     public static final String AUTO_OFFSET_RESET_EARLIEST = "earliest";
+    public static final String BANK_TRANSACTIONS_TOPIC = "bank-transactions";
+    public static final String BANK_BALANCES_TOPIC = "bank-balances";
+    public static final String ALL_ACKS = "all";
+    public static final String RETRIES = "3";
+    public static final boolean ENABLE_IDEMPOTENCE = true;
+    public static final int LINGER_MS = 1;
 
     private StreamConstants(){}
 }
