@@ -26,13 +26,26 @@ public class WordCountStreamApplication {
 
     public static void main(String[] args) {
 
-        Properties properties = new Properties();
-        properties.put(StreamsConfig.APPLICATION_ID_CONFIG, StreamConstants.WORD_COUNT_APPLICATION_ID);
-        properties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, StreamConstants.BOOTSTRAP_SERVERS);
-        properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, StreamConstants.AUTO_OFFSET_RESET_EARLIEST);
-        properties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
-        properties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
+        Properties properties = getProducerProperties();
 
+        Topology topology = createTopology();
+
+        KafkaStreams streams = new KafkaStreams(topology, properties);
+
+        LOGGER.info("Starting {}", StreamConstants.WORD_COUNT_APPLICATION_ID);
+        streams.start();
+
+        /*
+         You can visualize topology here : https://zz85.github.io/kafka-streams-viz/
+         Topology will help to understand the execution flow
+         */
+        LOGGER.info(topology.describe().toString());
+
+        Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
+
+    }
+
+    private static Topology createTopology() {
         /*
         Get a Stream from kafka topic
          */
@@ -88,19 +101,16 @@ public class WordCountStreamApplication {
          */
         wordCounts.toStream().to(StreamConstants.WORD_OUTPUT_TOPIC);
 
-        Topology topology = builder.build();
-        KafkaStreams streams = new KafkaStreams(topology, properties);
+        return builder.build();
+    }
 
-        LOGGER.info("Starting {}", StreamConstants.WORD_COUNT_APPLICATION_ID);
-        streams.start();
-
-        /*
-         You can visualize topology here : https://zz85.github.io/kafka-streams-viz/
-         Topology will help to understand the execution flow
-         */
-        LOGGER.info(topology.describe().toString());
-
-        Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
-
+    private static Properties getProducerProperties() {
+        Properties properties = new Properties();
+        properties.put(StreamsConfig.APPLICATION_ID_CONFIG, StreamConstants.WORD_COUNT_APPLICATION_ID);
+        properties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, StreamConstants.BOOTSTRAP_SERVERS);
+        properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, StreamConstants.AUTO_OFFSET_RESET_EARLIEST);
+        properties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
+        properties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
+        return properties;
     }
 }
