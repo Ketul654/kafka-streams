@@ -46,20 +46,13 @@ public class BankBalanceStreamApplication {
         Serde bankBalanceSerdes = Serdes.serdeFrom(new BankBalanceSerializer(), new BankBalanceDeserializer());
 
         KTable<String, BankBalance> bankBalanceKTable =  bankBalanceKStream.aggregate(
-                new Initializer<BankBalance>() {
-                    @Override
-                    public BankBalance apply() {
-                        return new BankBalance(0, Instant.ofEpochMilli(0L), 0);
-                    }
-                },
-                new Aggregator<String, BankTransaction, BankBalance>() {
-                    @Override
-                    public BankBalance apply(String name, BankTransaction bankTransaction, BankBalance bankBalance) {
-                        float balance = bankTransaction.getAmount() + bankBalance.getBalance();
-                        int noOfTransactions = bankBalance.getNoOfTransaction() + 1;
-                        Instant latestInstant = bankTransaction.getTime().compareTo(bankBalance.getTime()) >=0 ? bankTransaction.getTime() : bankBalance.getTime();
-                        return new BankBalance(balance, latestInstant, noOfTransactions);
-                    }
+                () -> new BankBalance(0, Instant.ofEpochMilli(0L), 0),
+                (name, bankTransaction, bankBalance) -> {
+                    return new BankBalance(
+                        bankTransaction.getAmount() + bankBalance.getBalance(),
+                        bankTransaction.getTime().compareTo(bankBalance.getTime()) >= 0 ? bankTransaction.getTime() : bankBalance.getTime(),
+                            bankBalance.getNoOfTransaction() + 1
+                    );
                 },
                 Materialized.as("bank-balance").withValueSerde(bankBalanceSerdes).withKeySerde(Serdes.String())
         );
