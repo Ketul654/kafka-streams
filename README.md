@@ -2,9 +2,9 @@
 
 ## About
 
-This has a few stream applications for different purposes i.e to calculate occurrence of same words from a stream of sentences, what colour is favourite for how many users from a stream of userid and colour, total remaining balance for different users from a stream of transactions etc. More details on how to run these streams are provided in java docs of those streams.
+This application will have samples for different kafka stream concepts.
 
-This is developed in Java 8 and Kafka Stream 2.7.0 
+This will be developed in Java 8 and Kafka Stream 2.7.0 
 
 Kafka cluster is prerequisite to run these applications. Follow ```Kafka Cluster Setup``` section to set it up.
 
@@ -74,43 +74,4 @@ Kafka cluster is prerequisite to run these applications. Follow ```Kafka Cluster
   
   WatchedEvent state:SyncConnected type:None path:null
   [0, 1, 2]
-  ```
-  
-## Kafka Topics
-
-* Create input and output topics
-  ```$xslt
-  bin/kafka-topics.sh --create \
-    --zookeeper localhost:2181 \
-    --replication-factor 1 \
-    --partitions 3 \
-    --topic word-count-input
-  
-  bin/kafka-topics.sh --create \
-    --zookeeper localhost:2181 \
-    --replication-factor 1 \
-    --partitions 3 \
-    --topic word-count-output
   ``` 
-  
-## Kafka Console Producer
-
-* Start console producer to produce message on input topic 
-  ```$xslt
-  bin/kafka-console-producer.sh --broker-list localhost:9092 --topic word-count-input
-  ```  
-  
-## Kafka Console Consumer
-
-* Start console consumer to consume messages from output topic
-
-  ```$xslt
-  bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 \
-    --topic word-count-output \
-    --from-beginning \
-    --formatter kafka.tools.DefaultMessageFormatter \
-    --property print.key=true \
-    --property print.value=true \
-    --property key.deserializer=org.apache.kafka.common.serialization.StringDeserializer \
-    --property value.deserializer=org.apache.kafka.common.serialization.LongDeserializer
-  ```   
