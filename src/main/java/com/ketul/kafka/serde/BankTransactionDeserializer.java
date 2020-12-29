@@ -26,7 +26,7 @@ public class BankTransactionDeserializer implements Deserializer<BankTransaction
     }
 
     @Override
-    public BankTransaction deserialize(String s, byte[] bytes) {
+    public BankTransaction deserialize(String topic, byte[] bytes) {
         BankTransaction bankTransaction = null;
         try {
             bankTransaction = mapper.readValue(bytes, BankTransaction.class);

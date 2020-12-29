@@ -26,7 +26,7 @@ public class BankBalanceDeserializer implements Deserializer<BankBalance> {
     }
 
     @Override
-    public BankBalance deserialize(String s, byte[] bytes) {
+    public BankBalance deserialize(String topic, byte[] bytes) {
         BankBalance bankBalance = null;
         try {
             bankBalance = mapper.readValue(bytes, BankBalance.class);

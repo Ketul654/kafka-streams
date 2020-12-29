@@ -28,7 +28,7 @@ public class BankTransactionSerializer implements Serializer<BankTransaction> {
     }
 
     @Override
-    public byte[] serialize(String s, BankTransaction bankTransaction) {
+    public byte[] serialize(String topic, BankTransaction bankTransaction) {
         byte [] bankTransactionBytes = null;
         try {
             bankTransactionBytes = mapper.writeValueAsString(bankTransaction).getBytes();

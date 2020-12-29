@@ -16,6 +16,7 @@ public class BankTransactionSerdeTest {
     private BankTransactionSerializer serializer = new BankTransactionSerializer(mapper);
     private BankTransactionDeserializer deserializer = new BankTransactionDeserializer(mapper);
     private Map config = Mockito.mock(Map.class);
+    private String topic = "topic-0";
 
     @Before
     public void setUp() throws Exception {
@@ -26,12 +27,20 @@ public class BankTransactionSerdeTest {
     @Test
     public void testValidBankBalance(){
         Instant now = Instant.now();
-        String topic = "topic-0";
         byte[] bytes = serializer.serialize(topic, new BankTransaction("ketul", 100f , now));
         BankTransaction transaction = deserializer.deserialize(topic, bytes);
         Assert.assertEquals(transaction.getTime(), now);
-        Assert.assertTrue(transaction.getAmount() ==100f);
+        Assert.assertTrue(transaction.getAmount() == 100f);
         Assert.assertTrue(transaction.getName().equals("ketul"));
+    }
+
+    @Test
+    public void testDeserializerIOException() {
+        /*
+         This will throw exception of type or child of IOException which is handled in deserialize method
+         */
+        BankTransaction transaction = deserializer.deserialize(topic, new byte[0]);
+        Assert.assertNull(transaction);
     }
 
     @After
