@@ -18,20 +18,12 @@ public class BankTransactionProducer {
     private static final Logger LOGGER = LoggerFactory.getLogger(BankTransactionProducer.class);
 
     public static void main(String[] args) {
-        Properties properties = new Properties();
-        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, StreamConstants.BOOTSTRAP_SERVERS);
-        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, BankTransactionSerializer.class.getName());
-
-        // Make it idempotence
-        properties.put(ProducerConfig.ACKS_CONFIG, StreamConstants.ALL_ACKS);
-        properties.put(ProducerConfig.RETRIES_CONFIG, StreamConstants.RETRIES);
-        properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, StreamConstants.ENABLE_IDEMPOTENCE);
-
-        // Publish messages very fast
-        properties.put(ProducerConfig.LINGER_MS_CONFIG, StreamConstants.LINGER_MS);
-
+        Properties properties = getProducerProperties();
         KafkaProducer<String, BankTransaction> producer = new KafkaProducer<String, BankTransaction>(properties);
+        produceTransactions(producer);
+    }
+
+    private static void produceTransactions(KafkaProducer<String, BankTransaction> producer) {
         String [] customers = new String[] {"John", "Thomas", "Ketul", "Jacob", "Bhumika", "Vipul"};
 
         Random random = new Random();
@@ -52,7 +44,22 @@ public class BankTransactionProducer {
         } finally {
             producer.close();
         }
+    }
 
+    private static Properties getProducerProperties(){
+        Properties properties = new Properties();
+        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, StreamConstants.BOOTSTRAP_SERVERS);
+        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, BankTransactionSerializer.class.getName());
 
+        // Make it idempotence
+        properties.put(ProducerConfig.ACKS_CONFIG, StreamConstants.ALL_ACKS);
+        properties.put(ProducerConfig.RETRIES_CONFIG, StreamConstants.RETRIES);
+        properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, StreamConstants.ENABLE_IDEMPOTENCE);
+
+        // Publish messages very fast
+        properties.put(ProducerConfig.LINGER_MS_CONFIG, StreamConstants.LINGER_MS);
+
+        return properties;
     }
 }
