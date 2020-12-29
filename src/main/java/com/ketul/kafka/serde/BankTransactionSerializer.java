@@ -14,6 +14,13 @@ import java.util.Map;
 public class BankTransactionSerializer implements Serializer<BankTransaction> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BankTransactionSerializer.class);
+    private ObjectMapper mapper;
+
+    public BankTransactionSerializer(ObjectMapper mapper){
+        mapper.registerModule(new JavaTimeModule());
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        this.mapper = mapper;
+    }
 
     @Override
     public void configure(Map configs, boolean isKey) {
@@ -22,9 +29,6 @@ public class BankTransactionSerializer implements Serializer<BankTransaction> {
 
     @Override
     public byte[] serialize(String s, BankTransaction bankTransaction) {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         byte [] bankTransactionBytes = null;
         try {
             bankTransactionBytes = mapper.writeValueAsString(bankTransaction).getBytes();

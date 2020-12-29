@@ -13,6 +13,12 @@ import java.util.Map;
 public class BankTransactionDeserializer implements Deserializer<BankTransaction> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BankTransactionDeserializer.class);
+    private ObjectMapper mapper;
+
+    public BankTransactionDeserializer(ObjectMapper mapper) {
+        mapper.registerModule(new JavaTimeModule());
+        this.mapper = mapper;
+    }
 
     @Override
     public void configure(Map<String, ?> configs, boolean isKey) {
@@ -21,10 +27,8 @@ public class BankTransactionDeserializer implements Deserializer<BankTransaction
 
     @Override
     public BankTransaction deserialize(String s, byte[] bytes) {
-        ObjectMapper mapper = new ObjectMapper();
         BankTransaction bankTransaction = null;
         try {
-            mapper.registerModule(new JavaTimeModule());
             bankTransaction = mapper.readValue(bytes, BankTransaction.class);
         } catch (IOException e) {
             LOGGER.error("Exception occurred while deserializing bank transaction : ", e);

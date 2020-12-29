@@ -1,5 +1,6 @@
 package com.ketul.kafka.producer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ketul.kafka.message.BankTransaction;
 import com.ketul.kafka.serde.BankTransactionSerializer;
 import com.ketul.kafka.stream.BankBalanceStreamApplication;
@@ -25,10 +26,10 @@ import static org.junit.Assert.*;
 public class BankTransactionProducerTest {
 
     private MockProducer<String, BankTransaction> mockProducer;
-
+    private ObjectMapper mapper = new ObjectMapper();
     @Before
     public void setUp() throws Exception {
-        mockProducer = new MockProducer<>(true, new StringSerializer(), new BankTransactionSerializer());
+        mockProducer = new MockProducer<>(true, new StringSerializer(), new BankTransactionSerializer(mapper));
     }
 
     @Test

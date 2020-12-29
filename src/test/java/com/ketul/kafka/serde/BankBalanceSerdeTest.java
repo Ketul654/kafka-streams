@@ -1,6 +1,7 @@
 package com.ketul.kafka.serde;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ketul.kafka.message.BankBalance;
 import org.junit.After;
 import org.junit.Assert;
@@ -13,9 +14,10 @@ import java.util.Map;
 
 public class BankBalanceSerdeTest {
 
-    private BankBalanceSerializer serializer = new BankBalanceSerializer();
-    private BankBalanceDeserializer deserializer = new BankBalanceDeserializer();
-    Map config = Mockito.mock(Map.class);
+    private ObjectMapper mapper = new ObjectMapper();
+    private BankBalanceSerializer serializer = new BankBalanceSerializer(mapper);
+    private BankBalanceDeserializer deserializer = new BankBalanceDeserializer(mapper);
+    private Map config = Mockito.mock(Map.class);
 
     @Before
     public void setUp() throws Exception {

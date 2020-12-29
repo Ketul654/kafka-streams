@@ -1,5 +1,6 @@
 package com.ketul.kafka.serde;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ketul.kafka.message.BankTransaction;
 import org.junit.After;
 import org.junit.Assert;
@@ -11,9 +12,10 @@ import java.util.Map;
 
 public class BankTransactionSerdeTest {
 
-    private BankTransactionSerializer serializer = new BankTransactionSerializer();
-    private BankTransactionDeserializer deserializer = new BankTransactionDeserializer();
-    Map config = Mockito.mock(Map.class);
+    private ObjectMapper mapper = new ObjectMapper();
+    private BankTransactionSerializer serializer = new BankTransactionSerializer(mapper);
+    private BankTransactionDeserializer deserializer = new BankTransactionDeserializer(mapper);
+    private Map config = Mockito.mock(Map.class);
 
     @Before
     public void setUp() throws Exception {
@@ -24,8 +26,9 @@ public class BankTransactionSerdeTest {
     @Test
     public void testValidBankBalance(){
         Instant now = Instant.now();
-        byte[] bytes = serializer.serialize("topic-0", new BankTransaction("ketul", 100f , now));
-        BankTransaction transaction = deserializer.deserialize("topic-0", bytes);
+        String topic = "topic-0";
+        byte[] bytes = serializer.serialize(topic, new BankTransaction("ketul", 100f , now));
+        BankTransaction transaction = deserializer.deserialize(topic, bytes);
         Assert.assertEquals(transaction.getTime(), now);
         Assert.assertTrue(transaction.getAmount() ==100f);
         Assert.assertTrue(transaction.getName().equals("ketul"));
