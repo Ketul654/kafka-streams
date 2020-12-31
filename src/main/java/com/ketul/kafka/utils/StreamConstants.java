@@ -9,6 +9,12 @@ public class StreamConstants {
     public static final String AUTO_OFFSET_RESET_EARLIEST = "earliest";
     public static final String BOOTSTRAP_SERVERS = "localhost:9092, localhost:9093, localhost:9094";
     public static final String INTERMEDIATE_TOPIC = "customer-intermediate";
+    public static final String K_OUTPUT_TOPIC = "k-output";
+    public static final String V_OUTPUT_TOPIC = "v-output";
+    public static final String B_OUTPUT_TOPIC = "b-output";
+    public static final String P_OUTPUT_TOPIC = "p-output";
+    public static final String U_OUTPUT_TOPIC = "u-output";
+    public static final String OTHER_OUTPUT_TOPIC = "other-output";
 
     private StreamConstants(){}
 }

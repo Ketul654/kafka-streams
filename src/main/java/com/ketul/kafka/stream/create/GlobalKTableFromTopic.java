@@ -45,6 +45,7 @@ public class GlobalKTableFromTopic {
         logger.info(topology.describe().toString());
         KafkaStreams streams = new KafkaStreams(topology, properties);
         streams.start();
+        Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
     }
 
     private static Topology createTopology() {

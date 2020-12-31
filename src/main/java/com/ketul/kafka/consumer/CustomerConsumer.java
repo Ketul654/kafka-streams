@@ -20,6 +20,12 @@ public class CustomerConsumer {
         ArrayList<String> topics = new ArrayList<>();
         topics.add(StreamConstants.OUTPUT_TOPIC);
         topics.add(StreamConstants.OUTPUT_COMPACTED_TOPIC);
+        topics.add(StreamConstants.K_OUTPUT_TOPIC);
+        topics.add(StreamConstants.V_OUTPUT_TOPIC);
+        topics.add(StreamConstants.B_OUTPUT_TOPIC);
+        topics.add(StreamConstants.P_OUTPUT_TOPIC);
+        topics.add(StreamConstants.U_OUTPUT_TOPIC);
+        topics.add(StreamConstants.OTHER_OUTPUT_TOPIC);
         KafkaConsumer<String, Customer> customerKafkaConsumer = new KafkaConsumer<String, Customer>(properties);
         consumeCustomerDetails(customerKafkaConsumer, topics);
     }
@@ -29,7 +35,6 @@ public class CustomerConsumer {
         try {
             while (true) {
                 ConsumerRecords<String, Customer> consumerRecords = customerKafkaConsumer.poll(Duration.ofMillis(1000));
-                LOGGER.info("Read {} customer records", consumerRecords.count());
                 for (ConsumerRecord<String, Customer> consumerRecord : consumerRecords) {
                     LOGGER.info(String.format("Topic : %s, Partition : %s, Offset : %s, Key : %s, Value : %s",
                             consumerRecord.topic(), consumerRecord.partition(), consumerRecord.offset(), consumerRecord.key(), consumerRecord.value()));
@@ -37,7 +42,7 @@ public class CustomerConsumer {
             }
 
         } catch (Exception e) {
-
+                LOGGER.error("Exception occurred while consuming customer data : ", e);
         } finally {
             customerKafkaConsumer.close();
         }
