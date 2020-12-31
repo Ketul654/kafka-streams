@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import java.util.Properties;
 
 /**
+ * Topic -> Stream -> Topic
+ *
  * 1. Create input and output topic
  *    bin/kafka-topics.sh --zookeeper localhost:2181 --create --topic customer-input --replication-factor 3 --partitions 3
  *    bin/kafka-topics.sh --zookeeper localhost:2181 --create --topic customer-output --replication-factor 3 --partitions 3
@@ -29,8 +31,8 @@ import java.util.Properties;
  *
  * 4. Start Customer Consumer
  */
-public class StreamFromTopic {
-    private static final Logger logger = LoggerFactory.getLogger(StreamFromTopic.class);
+public class KStreamFromTopic {
+    private static final Logger logger = LoggerFactory.getLogger(KStreamFromTopic.class);
     public static void main(String[] args) {
         Properties properties = getStreamProperties();
         Topology topology = createTopology();
