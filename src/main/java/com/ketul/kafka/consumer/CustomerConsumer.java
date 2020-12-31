@@ -29,7 +29,7 @@ public class CustomerConsumer {
         try {
             while (true) {
                 ConsumerRecords<String, Customer> consumerRecords = customerKafkaConsumer.poll(Duration.ofMillis(1000));
-
+                LOGGER.info("Read {} customer records", consumerRecords.count());
                 for (ConsumerRecord<String, Customer> consumerRecord : consumerRecords) {
                     LOGGER.info(String.format("Topic : %s, Partition : %s, Offset : %s, Key : %s, Value : %s",
                             consumerRecord.topic(), consumerRecord.partition(), consumerRecord.offset(), consumerRecord.key(), consumerRecord.value()));
