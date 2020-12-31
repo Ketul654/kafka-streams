@@ -31,7 +31,7 @@ public class CustomerProducer {
                 for (int j = 0; j < 10; j++) {
                     Customer customer = createRandomCustomer();
                     LOGGER.info(customer.toString());
-                    customerKafkaProducer.send(new ProducerRecord<>(StreamConstants.INPUT_TOPIC, customer));
+                    customerKafkaProducer.send(new ProducerRecord<>(StreamConstants.INPUT_TOPIC, customer.getCustomerId(), customer));
                 }
             }
         } catch (Exception e) {

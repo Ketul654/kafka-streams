@@ -19,6 +19,7 @@ public class CustomerConsumer {
         Properties properties = getConsumerProperties();
         ArrayList<String> topics = new ArrayList<>();
         topics.add(StreamConstants.OUTPUT_TOPIC);
+        topics.add(StreamConstants.OUTPUT_COMPACTED_TOPIC);
         KafkaConsumer<String, Customer> customerKafkaConsumer = new KafkaConsumer<String, Customer>(properties);
         consumeCustomerDetails(customerKafkaConsumer, topics);
     }
