@@ -52,13 +52,13 @@ public class KTableFromTopic {
          This will skip the record with null key
          if you create a KStream, records with null key will be processed. However, key is must fot KTable
          */
-        KTable<String, Customer> customerKStream = builder.table(StreamConstants.INPUT_TOPIC,
+        KTable<String, Customer> customerKTable = builder.table(StreamConstants.INPUT_TOPIC,
                 // Explicitly declaring serdes.
                 Consumed.with(
                         Serdes.String(),
                         consumerSerdes // Custom sedes
                 ));
-        customerKStream.toStream().to(StreamConstants.OUTPUT_COMPACTED_TOPIC);
+        customerKTable.toStream().to(StreamConstants.OUTPUT_COMPACTED_TOPIC);
         return builder.build();
     }
 
