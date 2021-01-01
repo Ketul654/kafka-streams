@@ -1,4 +1,4 @@
-package com.ketul.kafka.stream.transform.stateful;
+package com.ketul.kafka.stream.transform.stateless;
 
 import com.ketul.kafka.message.AccountDetails;
 import com.ketul.kafka.message.Customer;
