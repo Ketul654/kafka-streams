@@ -72,6 +72,9 @@ public class StreamGroupByWithRePartition {
                 /*
                 * groupByKey will trigger re-partition as stream is already marked for it by flatMap.
                 * It will not trigger repartition if stream is not marked for it.
+                *
+                * It groups the record with existing key
+                *
                 *    Sub-topology: 0
                         Source: KSTREAM-SOURCE-0000000000 (topics: [customer-input])
                           --> KSTREAM-FILTER-0000000001

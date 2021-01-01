@@ -1,6 +1,5 @@
 package com.ketul.kafka.stream.transform.stateless;
 
-import com.ketul.kafka.message.AccountDetails;
 import com.ketul.kafka.message.Customer;
 import com.ketul.kafka.serde.CustomerDeserializer;
 import com.ketul.kafka.serde.CustomerSerializer;
@@ -15,10 +14,6 @@ import org.apache.kafka.streams.kstream.KGroupedStream;
 import org.apache.kafka.streams.kstream.KTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 /**
@@ -57,6 +52,9 @@ public class StreamGroupByWithoutRePartition {
                 /*
                 * groupByKey will not trigger re-partition as stream is not marked for it.
                 * It will only trigger repartition if stream is marked for it.
+                *
+                * It groups the record with existing key
+                *
                 *    Sub-topology: 0
                         Source: KSTREAM-SOURCE-0000000000 (topics: [customer-input])
                           --> KSTREAM-FILTER-0000000001
