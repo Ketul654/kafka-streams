@@ -1,6 +1,6 @@
 package com.ketul.kafka.stream.transform.stateful;
 
-import com.ketul.kafka.message.AccountDetails;
+import com.ketul.kafka.aggregator.TransactionStatusAggregator;
 import com.ketul.kafka.message.Customer;
 import com.ketul.kafka.message.TransactionStatus;
 import com.ketul.kafka.serde.CustomerDeserializer;
@@ -18,7 +18,6 @@ import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -87,23 +86,7 @@ public class StreamAggregation {
          */
         KTable<String, TransactionStatus> aggregatedBalanceTable = kGroupedStream.aggregate(
                 () -> new TransactionStatus( 0.0f, 0.0f, 0.0f), // Initializing aggregated transaction status
-                (customerId, customer, aggregatedTransactionStatus) -> {
-
-                    LOGGER.info("Aggregated transaction status : {} for {}", aggregatedTransactionStatus.toString(), customerId);
-                    LOGGER.info("New customer details : {} for {}", customer.toString(), customerId);
-                    AccountDetails newAccountDetails = customer.getAccountDetails();
-                    float amountWithdrawn = aggregatedTransactionStatus.getAmountWithdrawn();
-                    float amountDeposited = aggregatedTransactionStatus.getAmountDeposited();
-                    float newPreviousTransaction = customer.getAccountDetails().getLastBankBalance();
-                    if(newAccountDetails.getLastBankBalance() > aggregatedTransactionStatus.getPreviousBalance()) {
-                        amountDeposited += newAccountDetails.getLastBankBalance() - aggregatedTransactionStatus.getPreviousBalance();
-                    } else if(newAccountDetails.getLastBankBalance() < aggregatedTransactionStatus.getPreviousBalance()) {
-                        amountWithdrawn += aggregatedTransactionStatus.getPreviousBalance() - newAccountDetails.getLastBankBalance();
-                    }
-                    TransactionStatus status = new TransactionStatus(newPreviousTransaction, amountWithdrawn, amountDeposited);
-                    LOGGER.info("New transaction status : {} for {}", status.toString(), customerId);
-                    return status;
-                },
+                new TransactionStatusAggregator(),
                 Materialized.<String, TransactionStatus, KeyValueStore<Bytes, byte[]>>as("transaction-status-store")
                         .withValueSerde(Serdes.serdeFrom(new TransactionStatusSerializer(), new TransactionStatusDeserializer()))
                         .withKeySerde(Serdes.String())
