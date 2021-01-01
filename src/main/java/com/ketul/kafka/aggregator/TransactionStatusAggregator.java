@@ -3,14 +3,14 @@ package com.ketul.kafka.aggregator;
 import com.ketul.kafka.message.AccountDetails;
 import com.ketul.kafka.message.Customer;
 import com.ketul.kafka.message.TransactionStatus;
-import com.ketul.kafka.stream.transform.stateful.StreamAggregation;
+import com.ketul.kafka.stream.transform.stateful.StreamNonWindowedAggregation;
 import org.apache.kafka.streams.kstream.Aggregator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TransactionStatusAggregator implements Aggregator<String, Customer, TransactionStatus> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(StreamAggregation.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StreamNonWindowedAggregation.class);
 
     @Override
     public TransactionStatus apply(String customerId, Customer customer, TransactionStatus aggregatedTransactionStatus) {

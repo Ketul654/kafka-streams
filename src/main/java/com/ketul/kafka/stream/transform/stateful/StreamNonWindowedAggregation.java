@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Topic -> Stream -> Filter -> FlatMap -> GroupByKey -> Aggregate -> Foreach to print stream data
+ * Topic -> Stream -> Filter -> FlatMap -> GroupByKey -> Non Windowed Aggregate -> Foreach to print stream data
  * <p>
  * 1. Create input and output topic
  * bin/kafka-topics.sh --zookeeper localhost:2181 --create --topic customer-input --replication-factor 3 --partitions 3
@@ -33,8 +33,8 @@ import java.util.Properties;
  * <p>
  * 3. Start this stream. You can also start multiple instances of stream
  */
-public class StreamAggregation {
-    private static final Logger LOGGER = LoggerFactory.getLogger(StreamAggregation.class);
+public class StreamNonWindowedAggregation {
+    private static final Logger LOGGER = LoggerFactory.getLogger(StreamNonWindowedAggregation.class);
 
     public static void main(String[] args) {
         Properties properties = getStreamProperties();
