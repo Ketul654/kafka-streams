@@ -1,4 +1,4 @@
-package com.ketul.kafka.stream.create;
+package com.ketul.kafka.stream.transform.stateful;
 
 import com.ketul.kafka.message.AccountDetails;
 import com.ketul.kafka.message.Customer;
@@ -29,7 +29,7 @@ import java.util.Properties;
  * <p>
  * 2. Start Customer Producer
  * <p>
- * 3. Start this stream
+ * 3. Start this stream. You can also start multiple instances of stream
  * <p>
  * 4. Start Customer Consumer
  */

@@ -1,4 +1,4 @@
-package com.ketul.kafka.stream.create;
+package com.ketul.kafka.stream.transform.stateful;
 
 import com.ketul.kafka.message.Customer;
 import com.ketul.kafka.serde.CustomerDeserializer;
