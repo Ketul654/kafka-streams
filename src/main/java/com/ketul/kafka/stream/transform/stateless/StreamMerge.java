@@ -7,55 +7,63 @@ import com.ketul.kafka.utils.StreamConstants;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.streams.*;
+import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.Properties;
 
 /**
- * Topic -> Stream -> Map -> MapValues -> foreach
- * <p>
- * 1. Create input and output topic
- * bin/kafka-topics.sh --zookeeper localhost:2181 --create --topic customer-input --replication-factor 3 --partitions 3
- * bin/kafka-topics.sh --zookeeper localhost:2181 --create --topic customer-output --replication-factor 3 --partitions 3
- * <p>
- * 2. Start Customer Producer
- * <p>
- * 3. Start this stream. You can also start multiple instances of stream
+ * KStream -> KStream[] -> merge
+ *
+ * 1. Create input and output topics
+ *    bin/kafka-topics.sh --zookeeper localhost:2181 --create --topic customer-input --replication-factor 3 --partitions 3
+ *
+ * 2. Start producer
+ *
+ * 3. Start this stream
  */
-public class StreamMap {
-    private static final Logger logger = LoggerFactory.getLogger(StreamMap.class);
-
+public class StreamMerge {
+    private static final Logger logger = LoggerFactory.getLogger(StreamMerge.class);
     public static void main(String[] args) {
         Properties properties = getStreamProperties();
         Topology topology = createTopology();
         logger.info(topology.describe().toString());
         KafkaStreams streams = new KafkaStreams(topology, properties);
+        streams.cleanUp();
         streams.start();
         Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
     }
 
     private static Topology createTopology() {
         StreamsBuilder builder = new StreamsBuilder();
-        Serde<Customer> customerSerdes = Serdes.serdeFrom(new CustomerSerializer(), new CustomerDeserializer());
+        Serde<Customer> customerSerdes =  Serdes.serdeFrom(new CustomerSerializer(), new CustomerDeserializer());
         KStream<String, Customer> customerKStream = builder.stream(StreamConstants.INPUT_TOPIC,
                 // Explicitly declaring serdes.
                 Consumed.with(
                         Serdes.String(),
                         customerSerdes // Custom sedes
-                ))
-                .filter(((customerId, customer) -> customer.getAge() >= 25))
-                .filterNot(((customerId, customer) -> customerId.startsWith("u")))
-                /*
-                This will mark stream data for re-partitioning. Applying group by or join after this triggers re-partitioning.
-                That is the reason mapValues is preferred over map.
-                 */
-                .map(((customerId, customer) -> KeyValue.pair(customerId.toUpperCase(), customer)))
-                .mapValues((Customer customer) -> new Customer(customer.getCustomerId(), customer.getName(), customer.getAge(), null));
+                ));
 
-        customerKStream.foreach((customerId, customer) -> logger.info(String.format("%s=>%s", customerId, customer.toString())));
+        KStream<String, Customer> [] customerKStreams = customerKStream.branch(
+                (customerId, customer) -> customerId.toUpperCase().startsWith("K"),
+                (customerId, customer) -> customerId.toUpperCase().startsWith("V"),
+                (customerId, customer) -> customerId.toUpperCase().startsWith("B"),
+                (customerId, customer) -> customerId.toUpperCase().startsWith("P"),
+                (customerId, customer) -> customerId.toUpperCase().startsWith("U"),
+                (customerId, customer) -> true
+        );
+
+        /*
+         * Merging two streams. There wont be any ordering guarantee
+         */
+        KStream<String, Customer> mergedStream = customerKStreams[0].merge(customerKStreams[2]);
+        mergedStream.foreach((customerId, customer) -> logger.info(String.format("%s=>%s", customerId, customer.toString())));
         return builder.build();
     }
 
