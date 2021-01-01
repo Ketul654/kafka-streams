@@ -54,6 +54,25 @@ public class StreamRepartition {
         /*
          * Repartitioning input stream
          *
+         * bin/kafka-topics.sh --zookeeper localhost:2181 --list | grep -i repartition --color
+            customer-stream-application-KSTREAM-AGGREGATE-STATE-STORE-0000000003-repartition
+            customer-stream-application-KSTREAM-AGGREGATE-STATE-STORE-0000000005-repartition
+            customer-stream-application-KSTREAM-REPARTITION-0000000001-repartition
+         *
+         *
+         * bin/kafka-topics.sh --zookeeper localhost:2181 --describe --topic customer-stream-application-KSTREAM-REPARTITION-0000000001-repartition
+                Topic: customer-stream-application-KSTREAM-REPARTITION-0000000001-repartition	PartitionCount: 10	ReplicationFactor: 1	Configs: cleanup.policy=delete,message.timestamp.type=CreateTime,segment.bytes=52428800,retention.ms=-1
+                    Topic: customer-stream-application-KSTREAM-REPARTITION-0000000001-repartition	Partition: 0	Leader: 1	Replicas: 1	Isr: 1
+                    Topic: customer-stream-application-KSTREAM-REPARTITION-0000000001-repartition	Partition: 1	Leader: 0	Replicas: 0	Isr: 0
+                    Topic: customer-stream-application-KSTREAM-REPARTITION-0000000001-repartition	Partition: 2	Leader: 2	Replicas: 2	Isr: 2
+                    Topic: customer-stream-application-KSTREAM-REPARTITION-0000000001-repartition	Partition: 3	Leader: 1	Replicas: 1	Isr: 1
+                    Topic: customer-stream-application-KSTREAM-REPARTITION-0000000001-repartition	Partition: 4	Leader: 0	Replicas: 0	Isr: 0
+                    Topic: customer-stream-application-KSTREAM-REPARTITION-0000000001-repartition	Partition: 5	Leader: 2	Replicas: 2	Isr: 2
+                    Topic: customer-stream-application-KSTREAM-REPARTITION-0000000001-repartition	Partition: 6	Leader: 1	Replicas: 1	Isr: 1
+                    Topic: customer-stream-application-KSTREAM-REPARTITION-0000000001-repartition	Partition: 7	Leader: 0	Replicas: 0	Isr: 0
+                    Topic: customer-stream-application-KSTREAM-REPARTITION-0000000001-repartition	Partition: 8	Leader: 2	Replicas: 2	Isr: 2
+                    Topic: customer-stream-application-KSTREAM-REPARTITION-0000000001-repartition	Partition: 9	Leader: 1	Replicas: 1	Isr: 1
+         *
          * Sub-topology: 0
             Source: KSTREAM-SOURCE-0000000000 (topics: [customer-input])
               --> KSTREAM-FILTER-0000000003
