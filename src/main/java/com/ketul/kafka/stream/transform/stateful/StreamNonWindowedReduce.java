@@ -10,17 +10,15 @@ import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.*;
 import org.apache.kafka.streams.kstream.*;
-import org.apache.kafka.streams.state.WindowStore;
+import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 /**
- * Topic -> Stream -> Filter -> FlatMap -> GroupByKey -> Windowed Count -> Foreach to print stream data
+ * Topic -> Stream -> Filter -> FlatMap -> GroupByKey -> Non Windowed Reduce -> Foreach to print stream data
  * <p>
  * 1. Create input and output topic
  * bin/kafka-topics.sh --zookeeper localhost:2181 --create --topic customer-input --replication-factor 3 --partitions 3
@@ -30,15 +28,14 @@ import java.util.Properties;
  * <p>
  * 3. Start this stream. You can also start multiple instances of stream
  */
-public class StreamWindowedCount {
-    private static final Logger LOGGER = LoggerFactory.getLogger(StreamWindowedCount.class);
+public class StreamNonWindowedReduce {
+    private static final Logger LOGGER = LoggerFactory.getLogger(StreamNonWindowedReduce.class);
 
     public static void main(String[] args) {
         Properties properties = getStreamProperties();
         Topology topology = createTopology();
         LOGGER.info(topology.describe().toString());
         KafkaStreams streams = new KafkaStreams(topology, properties);
-        streams.cleanUp();
         streams.start();
         Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
     }
@@ -65,12 +62,12 @@ public class StreamWindowedCount {
                     return customerList;
                 }))
                 /*
-                 * groupByKey will trigger re-partition as stream is already marked for it by flatMap.
-                 * It will not trigger repartition if stream is not marked for it.
-                 *
-                 * It groups the record with existing key
-                 *
-                 *
+                * groupByKey will trigger re-partition as stream is already marked for it by flatMap.
+                * It will not trigger repartition if stream is not marked for it.
+                *
+                * It groups the record with existing key
+                *
+                *
                  */
                 .groupByKey(
                         Grouped.with(
@@ -80,17 +77,20 @@ public class StreamWindowedCount {
                 );
 
         /*
-        This calculates total customer details for change in balance by window
+        This will find the customer details with maximum balance a customer maintained after account was opened
          */
-        KTable<Windowed<String>, Long> aggregatedBalanceTable = kGroupedStream.windowedBy(TimeWindows.of(Duration.ofMillis(500)).grace(Duration.ofMillis(10)))
-                .count(
-                        Materialized.<String, Long, WindowStore<Bytes, byte[]>>as("windowed-count-store")
-                                .withValueSerde(Serdes.Long())
-                                .withKeySerde(Serdes.String()).withRetention(Duration.ofMillis(1000))
-                );
+        KTable<String, Customer> aggregatedBalanceTable = kGroupedStream.reduce(
+                (customerWithMaxBalance, newCustomer) -> {
+                    return customerWithMaxBalance.getAccountDetails().getLastBankBalance() >= newCustomer.getAccountDetails().getLastBankBalance() ?
+                            customerWithMaxBalance : newCustomer;
+                },
+                Materialized.<String, Customer, KeyValueStore<Bytes, byte[]>>as("non-window-reduce-store")
+                        .withValueSerde(customerSerdes)
+                        .withKeySerde(Serdes.String())
+        );
 
-        aggregatedBalanceTable.toStream().foreach(
-                (customerId, count) -> LOGGER.info(String.format("[%s@%s-%s] => %d", customerId.key(), customerId.window().startTime(), customerId.window().endTime(), count)));
+
+        aggregatedBalanceTable.toStream().foreach((customerId, customer) -> LOGGER.info(String.format("%s => %s", customerId, customer.toString())));
         return builder.build();
     }
 

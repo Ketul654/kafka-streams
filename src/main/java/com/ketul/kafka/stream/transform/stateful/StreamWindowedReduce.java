@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Topic -> Stream -> Filter -> FlatMap -> GroupByKey -> Windowed Count -> Foreach to print stream data
+ * Topic -> Stream -> Filter -> FlatMap -> GroupByKey -> Non Windowed Reduce -> Foreach to print stream data
  * <p>
  * 1. Create input and output topic
  * bin/kafka-topics.sh --zookeeper localhost:2181 --create --topic customer-input --replication-factor 3 --partitions 3
@@ -30,15 +30,14 @@ import java.util.Properties;
  * <p>
  * 3. Start this stream. You can also start multiple instances of stream
  */
-public class StreamWindowedCount {
-    private static final Logger LOGGER = LoggerFactory.getLogger(StreamWindowedCount.class);
+public class StreamWindowedReduce {
+    private static final Logger LOGGER = LoggerFactory.getLogger(StreamWindowedReduce.class);
 
     public static void main(String[] args) {
         Properties properties = getStreamProperties();
         Topology topology = createTopology();
         LOGGER.info(topology.describe().toString());
         KafkaStreams streams = new KafkaStreams(topology, properties);
-        streams.cleanUp();
         streams.start();
         Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
     }
@@ -80,17 +79,22 @@ public class StreamWindowedCount {
                 );
 
         /*
-        This calculates total customer details for change in balance by window
+        This will find the customer details with maximum balance by window a customer maintained after account was opened
          */
-        KTable<Windowed<String>, Long> aggregatedBalanceTable = kGroupedStream.windowedBy(TimeWindows.of(Duration.ofMillis(500)).grace(Duration.ofMillis(10)))
-                .count(
-                        Materialized.<String, Long, WindowStore<Bytes, byte[]>>as("windowed-count-store")
-                                .withValueSerde(Serdes.Long())
-                                .withKeySerde(Serdes.String()).withRetention(Duration.ofMillis(1000))
+        KTable<Windowed<String>, Customer> aggregatedBalanceTable = kGroupedStream.windowedBy(
+                TimeWindows.of(Duration.ofMinutes(5)))
+                .reduce(
+                        (customerWithMaxBalance, newCustomer) -> {
+                            return customerWithMaxBalance.getAccountDetails().getLastBankBalance() >= newCustomer.getAccountDetails().getLastBankBalance() ?
+                                    customerWithMaxBalance : newCustomer;
+                        },
+                        Materialized.<String, Customer, WindowStore<Bytes, byte[]>>as("windowed-reduce-store")
+                                .withValueSerde(customerSerdes)
+                                .withKeySerde(Serdes.String())
                 );
 
-        aggregatedBalanceTable.toStream().foreach(
-                (customerId, count) -> LOGGER.info(String.format("[%s@%s-%s] => %d", customerId.key(), customerId.window().startTime(), customerId.window().endTime(), count)));
+
+        aggregatedBalanceTable.toStream().foreach((customerId, customer) -> LOGGER.info(String.format("%s => %s", customerId, customer.toString())));
         return builder.build();
     }
 
