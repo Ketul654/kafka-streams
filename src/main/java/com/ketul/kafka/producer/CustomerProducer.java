@@ -27,7 +27,7 @@ public class CustomerProducer {
 
     private static void sendCustomerDetails(Producer<String, Customer> customerKafkaProducer) {
         try {
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 100000; i++) {
                 for (int j = 0; j < 10; j++) {
                     Customer customer = createRandomCustomer();
                     LOGGER.info(customer.toString());
