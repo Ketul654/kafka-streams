@@ -2,9 +2,27 @@
 
 ## About
 
-This application will have samples for different kafka stream concepts.
+This application has samples for different kafka stream operations like :
 
-This will be developed in Java 8 and Kafka Stream 2.7.0 
+* Filter/FilterNot
+* Map/MapValues
+* FlatMap/FlatMapValues
+* Peek
+* Print
+* Foreach
+* GroupBy
+* GroupByKey
+* SelectKey
+* Repartition
+* Merge
+* Branch
+* Cogroup
+* Aggregate(Windowed/Non Windowed)
+* Reduce(Windowed/Non Windowed)
+* Count(Windowed/Non Windowed)
+* Join
+
+This is developed in Java 8 and Kafka Streams 2.7.0 
 
 Kafka cluster is prerequisite to run these applications. Follow ```Kafka Cluster Setup``` section to set it up.
 
