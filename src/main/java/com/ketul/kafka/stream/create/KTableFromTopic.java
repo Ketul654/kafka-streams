@@ -26,7 +26,7 @@ import java.util.Properties;
  *    bin/kafka-topics.sh --zookeeper localhost:2181 --create --topic customer-compacted-output --partitions 3 --replication-factor 3 --config "cleanup.policy=compact" --config "delete.retention.ms=100" --config "segment.ms=100" --config "min.cleanable.dirty.ratio=0.01" --config "segment.bytes=300"
  *    NOTE : these segment configurations for compacted are just for learning purpose and not ideal for production.
  *
- * 2. Start Customer Producer
+ * 2. Start Customer With Account Details Producer
  *
  * 3. Start this stream
  *
@@ -53,13 +53,13 @@ public class KTableFromTopic {
          This will skip the record with null key
          if you create a KStream, records with null key will be processed. However, key is must fot KTable
          */
-        KTable<String, Customer> customerKTable = builder.table(StreamConstants.INPUT_TOPIC,
+        KTable<String, Customer> customerKTable = builder.table(StreamConstants.CONSUMER_INPUT_TOPIC,
                 // Explicitly declaring serdes.
                 Consumed.with(
                         Serdes.String(),
                         consumerSerdes // Custom sedes
                 ));
-        customerKTable.toStream().to(StreamConstants.OUTPUT_COMPACTED_TOPIC);
+        customerKTable.toStream().to(StreamConstants.CONSUMER_OUTPUT_COMPACTED_TOPIC);
         return builder.build();
     }
 

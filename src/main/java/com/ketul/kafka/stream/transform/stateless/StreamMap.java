@@ -21,7 +21,7 @@ import java.util.Properties;
  * bin/kafka-topics.sh --zookeeper localhost:2181 --create --topic customer-input --replication-factor 3 --partitions 3
  * bin/kafka-topics.sh --zookeeper localhost:2181 --create --topic customer-output --replication-factor 3 --partitions 3
  * <p>
- * 2. Start Customer Producer
+ * 2. Start Customer With Account Details Producer
  * <p>
  * 3. Start this stream. You can also start multiple instances of stream
  */
@@ -40,7 +40,7 @@ public class StreamMap {
     private static Topology createTopology() {
         StreamsBuilder builder = new StreamsBuilder();
         Serde<Customer> customerSerdes = Serdes.serdeFrom(new CustomerSerializer(), new CustomerDeserializer());
-        KStream<String, Customer> customerKStream = builder.stream(StreamConstants.INPUT_TOPIC,
+        KStream<String, Customer> customerKStream = builder.stream(StreamConstants.CONSUMER_INPUT_TOPIC,
                 // Explicitly declaring serdes.
                 Consumed.with(
                         Serdes.String(),

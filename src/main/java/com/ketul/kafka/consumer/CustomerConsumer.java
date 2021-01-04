@@ -18,8 +18,8 @@ public class CustomerConsumer {
     public static void main(String[] args) {
         Properties properties = getConsumerProperties();
         ArrayList<String> topics = new ArrayList<>();
-        topics.add(StreamConstants.OUTPUT_TOPIC);
-        topics.add(StreamConstants.OUTPUT_COMPACTED_TOPIC);
+        topics.add(StreamConstants.CONSUMER_OUTPUT_TOPIC);
+        topics.add(StreamConstants.CONSUMER_OUTPUT_COMPACTED_TOPIC);
         topics.add(StreamConstants.K_OUTPUT_TOPIC);
         topics.add(StreamConstants.V_OUTPUT_TOPIC);
         topics.add(StreamConstants.B_OUTPUT_TOPIC);

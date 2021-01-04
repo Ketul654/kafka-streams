@@ -36,6 +36,10 @@ public class Customer {
         this.age = age;
     }
 
+    public void setAccountDetails(AccountDetails accountDetails) {
+        this.accountDetails = accountDetails;
+    }
+
     @Override
     public String toString() {
         return "Customer{" +

@@ -43,7 +43,7 @@ public class StreamMerge {
     private static Topology createTopology() {
         StreamsBuilder builder = new StreamsBuilder();
         Serde<Customer> customerSerdes =  Serdes.serdeFrom(new CustomerSerializer(), new CustomerDeserializer());
-        KStream<String, Customer> customerKStream = builder.stream(StreamConstants.INPUT_TOPIC,
+        KStream<String, Customer> customerKStream = builder.stream(StreamConstants.CONSUMER_INPUT_TOPIC,
                 // Explicitly declaring serdes.
                 Consumed.with(
                         Serdes.String(),
