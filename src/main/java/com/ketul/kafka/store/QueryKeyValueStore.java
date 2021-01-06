@@ -57,6 +57,7 @@ public class QueryKeyValueStore {
                     KeyValue<String, Long> next = iterator.next();
                     LOGGER.info("count for customer {} is {} in store {}", next.key, next.value, KEY_VALUE_STORE_NAME);
                 }
+                iterator.close();
                 Thread.sleep(30000);
             } catch (Exception ex) {
                 LOGGER.error(ex.getMessage());

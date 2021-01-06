@@ -44,7 +44,6 @@ public class QueryWindowStore {
         Topology topology = createTopology();
         LOGGER.info(topology.describe().toString());
         KafkaStreams streams = new KafkaStreams(topology, properties);
-        streams.cleanUp();
         streams.start();
         readWindowStoreThroughInteractiveQuery(streams);
         Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
@@ -66,6 +65,7 @@ public class QueryWindowStore {
                     long windowTimestamp = next.key;
                     LOGGER.info("count for customer rony235 @ time {} is {} in store {}", Instant.ofEpochMilli(windowTimestamp).toString(), next.value, WINDOWED_STORE_NAME);
                 }
+                iterator.close();
                 Thread.sleep(30000);
             } catch (Exception ex) {
                 LOGGER.error(ex.getMessage());
