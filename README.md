@@ -2,7 +2,7 @@
 
 ## About
 
-This application has samples for different kafka stream operations like :
+This application has samples for different kafka stream operations/concepts like :
 
 * Filter/FilterNot
 * Map/MapValues
@@ -21,6 +21,7 @@ This application has samples for different kafka stream operations like :
 * Reduce(Windowed/Non Windowed)
 * Count(Windowed/Non Windowed)
 * Join
+* Interactive Queries
 
 This is developed in Java 8 and Kafka Streams 2.7.0 
 
